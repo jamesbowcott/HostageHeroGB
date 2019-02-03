@@ -19,9 +19,14 @@ public class Player_Controller : MonoBehaviour
     [SerializeField]
     private GameObject GM;
 
+    [SerializeField]
+    private AudioClip[] jumpSounds;
+    private AudioSource audioSource;
+
     // Use this for initialization
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         animator = gameObject.GetComponent<Animator>();
         jumpDelay = 0.0f;
     }
@@ -50,6 +55,8 @@ public class Player_Controller : MonoBehaviour
     {
         animator.SetBool("isJumping", true);
         gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * force, ForceMode2D.Impulse);
+        audioSource.clip = jumpSounds[Random.Range(0, jumpSounds.Length - 1)];
+        audioSource.Play();
     }
 
     private void OnCollisionStay2D(Collision2D collision)

@@ -9,8 +9,14 @@ public class Player_Shoot : MonoBehaviour {
 
     private GameObject[] bulletPool;
 
-	// Use this for initialization
-	void Start () {
+    [SerializeField]
+    private AudioClip[] shootSounds;
+    private AudioSource audioSource;
+
+    // Use this for initialization
+    void Start () {
+
+        audioSource = GetComponent<AudioSource>();
 
         bulletPool = new GameObject[2];
         for (int i = 0; i < bulletPool.Length; i++)
@@ -38,6 +44,8 @@ public class Player_Shoot : MonoBehaviour {
         {
             if (!bulletPool[i].activeInHierarchy)
             {
+                audioSource.clip = shootSounds[Random.Range(0, shootSounds.Length - 1)];
+                audioSource.Play();
                 bulletPool[i].transform.position = transform.position;
                 bulletPool[i].SetActive(true);
                 break;

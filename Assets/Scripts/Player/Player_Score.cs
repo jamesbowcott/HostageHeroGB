@@ -27,8 +27,6 @@ public class Player_Score : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Box"))
         {
-            audioSource.clip = scoreClips[Random.Range(0, scoreClips.Length - 1)];
-            audioSource.Play();
             IncreaseScore(10);
         }
 
@@ -36,6 +34,8 @@ public class Player_Score : MonoBehaviour
 
     public void IncreaseScore(int amount)
     {
+        audioSource.clip = scoreClips[Random.Range(0, scoreClips.Length - 1)];
+        audioSource.Play();
         score += amount;
         UIText.text = score.ToString();
     }
