@@ -30,6 +30,7 @@ public class Obstacle_Spawner : MonoBehaviour {
         {
             boxPool[i] = Instantiate(boxPrefab);
             boxPool[i].SetActive(false);
+            boxPool[i].transform.parent = transform;
         }
 		
 	}
