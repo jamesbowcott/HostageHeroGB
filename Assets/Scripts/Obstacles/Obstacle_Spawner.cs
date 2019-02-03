@@ -6,8 +6,13 @@ public class Obstacle_Spawner : MonoBehaviour {
 
     [SerializeField]
     private GameObject boxPrefab;
+    [SerializeField]
+    private GameObject enemyPrefab;
 
     private GameObject[] boxPool;
+    private GameObject[] enemyPool;
+
+    private List<GameObject[]> obstaclePools;
 
     [SerializeField]
     private float movementSpeed;
@@ -26,11 +31,21 @@ public class Obstacle_Spawner : MonoBehaviour {
         respawnTimeMin = 2.0f;
 
         boxPool = new GameObject[5];
+        enemyPool = new GameObject[5];
+
+        obstaclePools = new List<GameObject[]>();
+        obstaclePools.Add(boxPool);
+        obstaclePools.Add(enemyPool);
+
         for (int i = 0; i < boxPool.Length; i++)
         {
             boxPool[i] = Instantiate(boxPrefab);
             boxPool[i].SetActive(false);
             boxPool[i].transform.parent = transform;
+
+            enemyPool[i] = Instantiate(enemyPrefab);
+            enemyPool[i].SetActive(false);
+            enemyPool[i].transform.parent = transform;
         }
 		
 	}
@@ -52,13 +67,16 @@ public class Obstacle_Spawner : MonoBehaviour {
 
     void SpawnObstacle()
     {
-        for (int i = 0; i < boxPool.Length; i++)
+
+        var pool = obstaclePools[Random.Range(0, obstaclePools.Count)];
+
+        for (int i = 0; i < pool.Length; i++)
         {
-            if (!boxPool[i].activeInHierarchy)
+            if (!pool[i].activeInHierarchy)
             {
-                boxPool[i].transform.position = transform.position;
-                boxPool[i].GetComponent<Obstacle_Movement>().SetMovementSpeed(movementSpeed);
-                boxPool[i].SetActive(true);
+                pool[i].transform.position = transform.position;
+                pool[i].GetComponent<Obstacle_Movement>().SetMovementSpeed(movementSpeed);
+                pool[i].SetActive(true);
                 break;
             }
         }
@@ -69,20 +87,6 @@ public class Obstacle_Spawner : MonoBehaviour {
             print("increase!");
             if (Time.timeScale < 7.0f) IncreaseTimeScale(0.5f);
         }
-    }
-
-    void IncreaseMovementSpeed(float amount)
-    {
-        movementSpeed += amount;
-
-        for (int i = 0; i < boxPool.Length; i++)
-        {
-            if (boxPool[i].activeInHierarchy)
-            {
-                boxPool[i].GetComponent<Obstacle_Movement>().SetMovementSpeed(movementSpeed);
-            }
-        }
-
     }
 
     void IncreaseTimeScale(float amount)

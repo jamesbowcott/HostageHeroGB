@@ -64,7 +64,15 @@ public class Player_Controller : MonoBehaviour
             }
 
         }
-        else if (collision.gameObject.CompareTag("Enemy"))
+        else if (collision.gameObject.CompareTag("Box"))
+        {
+            GM.GetComponent<Game_State>().GameOver();
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
         {
             GM.GetComponent<Game_State>().GameOver();
         }
