@@ -6,6 +6,7 @@ The game can be played in a browser here: https://corrie.itch.io/hostage-hero-33
 
 ### Credits
 Art was taken from the original game, Hostage Hero, and reskinned for this jam.
+
 Sounds were created using https://www.bfxr.net/
 
 ### Usage
