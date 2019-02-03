@@ -23,7 +23,7 @@ public class Game_State : MonoBehaviour {
     {
         if (gameOver)
         {
-            if (Input.GetKeyDown(KeyCode.X))
+            if (Input.GetButton("Interact"))
             {
                 SceneManager.LoadScene(1);
                 Time.timeScale = 1.0f;

@@ -7,7 +7,7 @@ public class LoadGameScene : MonoBehaviour {
 
 	void Update () {
 
-        if (Input.GetKeyDown(KeyCode.X))
+        if (Input.GetButton("Interact"))
         {
             SceneManager.LoadScene(1);
         }
