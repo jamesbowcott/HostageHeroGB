@@ -1,5 +1,5 @@
 # Hostage Hero 3310
-A demake of my previous title, Hostage Hero, made as part of the Nokia 3310 Jam
+A demake of my previous title, Hostage Hero, made as part of the Nokia 3310 Jam. Created in Unity 2017.4
 
 ### Link
 The game can be played in a browser here: https://corrie.itch.io/hostage-hero-3310
