@@ -1,5 +1,6 @@
-HostageHeroGB
--------------
+# HostageHeroGB
+
+**WORK IN PROGRESS**
 
 Port of HostageHero3310 by Corrie Barton to the Game Boy
 
