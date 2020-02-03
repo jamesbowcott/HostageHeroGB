@@ -30,9 +30,9 @@ Map_Load::
 
 Map_Clear::
    ld	a, MAP_WHITE_TILE_INDEX
-	ld	hl, _SCRN0
-	ld	bc, SCRN_VX_B * SCRN_VY_B
-	call	mem_SetVRAM
+   ld	hl, _SCRN0
+   ld	bc, SCRN_VX_B * SCRN_VY_B
+   call	mem_SetVRAM
    ret
 
 Map_Draw::

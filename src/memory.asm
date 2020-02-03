@@ -7,12 +7,12 @@ INCLUDE "hardware.inc"
 ; Macro that pauses until VRAM available.
 
 lcd_WaitVRAM: MACRO
-        ld      a,[rSTAT]       ; <---+
-        and     STATF_BUSY      ;     |
-        jr      nz,@-4          ; ----+
-        ENDM
+   ld      a,[rSTAT]       ; <---+
+   and     STATF_BUSY      ;     |
+   jr      nz,@-4          ; ----+
+   ENDM
 
-        PUSHS           ; Push the current section onto assember stack.
+   PUSHS           ; Push the current section onto assember stack.
 
 ;***************************************************************************
 ;*
@@ -25,15 +25,15 @@ lcd_WaitVRAM: MACRO
 ;*
 ;***************************************************************************
 mem_Set::
-	inc	b
-	inc	c
-	jr	.skip
+   inc	b
+   inc	c
+   jr	.skip
 .loop	ld	[hl+],a
 .skip	dec	c
-	jr	nz,.loop
-	dec	b
-	jr	nz,.loop
-	ret
+   jr	nz,.loop
+   dec	b
+   jr	nz,.loop
+   ret
 
 ;***************************************************************************
 ;*
@@ -46,17 +46,17 @@ mem_Set::
 ;*
 ;***************************************************************************
 mem_Copy::
-	inc	b
-	inc	c
-	jr	.skip
+   inc	b
+   inc	c
+   jr	.skip
 .loop	ld	a,[hl+]
-	ld	[de],a
-	inc	de
+   ld	[de],a
+   inc	de
 .skip	dec	c
-	jr	nz,.loop
-	dec	b
-	jr	nz,.loop
-	ret
+   jr	nz,.loop
+   dec	b
+   jr	nz,.loop
+   ret
 
 ;***************************************************************************
 ;*
@@ -69,19 +69,19 @@ mem_Copy::
 ;*
 ;***************************************************************************
 mem_CopyMono::
-	inc	b
-	inc	c
-	jr	.skip
+   inc	b
+   inc	c
+   jr	.skip
 .loop	ld	a,[hl+]
-	ld	[de],a
-	inc	de
-        ld      [de],a
-        inc     de
+   ld	[de],a
+   inc	de
+   ld      [de],a
+   inc     de
 .skip	dec	c
-	jr	nz,.loop
-	dec	b
-	jr	nz,.loop
-	ret
+   jr	nz,.loop
+   dec	b
+   jr	nz,.loop
+   ret
 
 
 ;***************************************************************************
@@ -95,9 +95,9 @@ mem_CopyMono::
 ;*
 ;***************************************************************************
 mem_SetVRAM::
-	inc	b
-	inc	c
-	jr	.skip
+   inc	b
+   inc	c
+   jr	.skip
 .loop   push    af
         di
         lcd_WaitVRAM
@@ -105,10 +105,10 @@ mem_SetVRAM::
         ld      [hl+],a
         ei
 .skip	dec	c
-	jr	nz,.loop
-	dec	b
-	jr	nz,.loop
-	ret
+   jr	nz,.loop
+   dec	b
+   jr	nz,.loop
+   ret
 
 ;***************************************************************************
 ;*
@@ -121,19 +121,19 @@ mem_SetVRAM::
 ;*
 ;***************************************************************************
 mem_CopyVRAM::
-	inc	b
-	inc	c
-	jr	.skip
+   inc	b
+   inc	c
+   jr	.skip
 .loop   di
-        lcd_WaitVRAM
-        ld      a,[hl+]
-	ld	[de],a
-        ei
-	inc	de
+   lcd_WaitVRAM
+   ld      a,[hl+]
+   ld	[de],a
+   ei
+   inc	de
 .skip	dec	c
-	jr	nz,.loop
-	dec	b
-	jr	nz,.loop
-	ret
+   jr	nz,.loop
+   dec	b
+   jr	nz,.loop
+   ret
 
-        POPS           ; Pop the current section off of assember stack.
+   POPS           ; Pop the current section off of assember stack.
