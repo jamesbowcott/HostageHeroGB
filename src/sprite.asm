@@ -6,6 +6,8 @@ SPRITE_VRAM_ORIGIN EQU $8000
 SPRITE_NORMAL_Y_POSITION EQU SCRN_Y - (MAP_FLOOR_HEIGHT * 8) - 16
 SPRITE_MAX_JUMP_HEIGHT EQU 60
 
+SPRITE_JUMP_VELOCITY EQU 20
+
 
 SECTION "SpriteRom",rom0
 
@@ -24,7 +26,7 @@ Sprite_Load::
    ld hl, SpritePosY
    ld [hl], SPRITE_NORMAL_Y_POSITION
    inc hl
-   ld [hl], 1 ; is jumping
+   ld [hl], 0 ; velocity
    ret
 
 ClearOam:
@@ -67,37 +69,63 @@ DrawPlayerSprite::
 
 
 UpdatePlayerSprite::
-   ld a, [SpriteIsJumping]
+
+   ; Load velocity into A and position into C
+   ld a, [SpriteJumpVelocity]
+   ld hl, SpritePosY
+   ld c, [hl]
+   ; Is the velocity 0?
    cp a, 0
-   jp z, .isfalling
-; is jumping
-   ld a, [SpritePosY]
-   dec a
-   ld [SpritePosY], a
-   cp a, (SPRITE_NORMAL_Y_POSITION - SPRITE_MAX_JUMP_HEIGHT)
-   ret nz
-   ; start falling
-   ld a, 0
-   ld [SpriteIsJumping], a
-   ret
+   jr nz, .already_jumping
+.new_jump
+   ld a, (SPRITE_JUMP_VELOCITY - 1)
+.already_jumping:
 
-.isfalling:
-   ld a, [SpritePosY]
-   inc a
-   ld [SpritePosY], a
-   cp a, (SPRITE_NORMAL_Y_POSITION)
-   ret nz
-   ; start jumping
-   ld a, 1
-   ld [SpriteIsJumping], a
-   ret
+.update_jump:
+   ; Copy velocity from A into B
+   ld b, a
+   ; Top half of max velocity = rise.
+   ; Bottom half of max velocity = fall.
+   cp a, (SPRITE_JUMP_VELOCITY / 2)   ; c flag = velocity > mv / 2
+   jp c, .falling
+   jp z, .top
 
+.rising:
+   sub a, (SPRITE_JUMP_VELOCITY / 2) ; Half the velocity to get the rising velocity
+   ; Store rising velocity into D. Load position into A.
+   ld d, a
+   ld a, c
+   ; Subtract velocity from position
+   sub a, d
+   jp .finish
+
+.top:
+   ; dec c
+
+.falling:
+   ; Falling velocity = (Max Velocity / 2) - Velocity
+   ld a, (SPRITE_JUMP_VELOCITY / 2)
+   sub a, b
+   ; Store falling velocity into D. Load position into A.
+   ld d, a
+   ld a, c
+   ; Add velocity to position
+   add a, d
+
+.finish:
+   ; a = Y Pos
+   ; b = Velocity
+   ; hl = SpritePosY
+   ld [hl+], a
+   dec b
+   ld [hl], b
+   ret
 
 
 
 SECTION "SpriteRam",wram0
 SpritePosY: DS 1
-SpriteIsJumping: DS 1
+SpriteJumpVelocity: DS 1
 
 SECTION "SpriteOam",oam
 SpriteOam: DS 4
