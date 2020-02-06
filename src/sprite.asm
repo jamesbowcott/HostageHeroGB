@@ -6,7 +6,7 @@ SPRITE_VRAM_ORIGIN EQU $8000
 SPRITE_NORMAL_Y_POSITION EQU SCRN_Y - (MAP_FLOOR_HEIGHT * 8) - 16
 SPRITE_MAX_JUMP_HEIGHT EQU 60
 
-SPRITE_JUMP_VELOCITY EQU 20
+SPRITE_JUMP_HEIGHT EQU 64
 
 
 SECTION "SpriteRom",rom0
@@ -25,8 +25,9 @@ Sprite_Load::
    ; Init variables
    ld hl, SpritePosY
    ld [hl], SPRITE_NORMAL_Y_POSITION
-   inc hl
-   ld [hl], 0 ; velocity
+   ld a, 0
+   ld [SpritePosY], a
+   ld [SpriteJumpPhase], a
    ret
 
 ClearOam:
@@ -69,63 +70,36 @@ DrawPlayerSprite::
 
 
 UpdatePlayerSprite::
+   ld a, [SpriteJumpPhase] ; A = Jump phase (0 - 255)
+   ld hl, SineTable        ; HL = Pointer to Sine wave table
+   ld de, 0
+   ld e, a
+   add hl, de              ; Add phase to HL pointer
+   ld a, [hl]              ; A = Sine value for jump phase
 
-   ; Load velocity into A and position into C
-   ld a, [SpriteJumpVelocity]
-   ld hl, SpritePosY
-   ld c, [hl]
-   ; Is the velocity 0?
-   cp a, 0
-   jr nz, .already_jumping
-.new_jump
-   ld a, (SPRITE_JUMP_VELOCITY - 1)
-.already_jumping:
+   ; Use sine value to scale the jump height
+   ld h, a
+   ld e, SPRITE_JUMP_HEIGHT
+   call Mul8                  
 
-.update_jump:
-   ; Copy velocity from A into B
-   ld b, a
-   ; Top half of max velocity = rise.
-   ; Bottom half of max velocity = fall.
-   cp a, (SPRITE_JUMP_VELOCITY / 2)   ; c flag = velocity > mv / 2
-   jp c, .falling
-   jp z, .top
+   ; Y position = Normal Y pos - current jump height
+   ld a, SPRITE_NORMAL_Y_POSITION
+   sub a, h
+   ld [SpritePosY], a
 
-.rising:
-   sub a, (SPRITE_JUMP_VELOCITY / 2) ; Half the velocity to get the rising velocity
-   ; Store rising velocity into D. Load position into A.
-   ld d, a
-   ld a, c
-   ; Subtract velocity from position
-   sub a, d
-   jp .finish
+   ; Increment the jump phase
+   ld hl, SpriteJumpPhase
+   ld a, [hl]
+   add a, 3
+   ld [hl], a
 
-.top:
-   ; dec c
-
-.falling:
-   ; Falling velocity = (Max Velocity / 2) - Velocity
-   ld a, (SPRITE_JUMP_VELOCITY / 2)
-   sub a, b
-   ; Store falling velocity into D. Load position into A.
-   ld d, a
-   ld a, c
-   ; Add velocity to position
-   add a, d
-
-.finish:
-   ; a = Y Pos
-   ; b = Velocity
-   ; hl = SpritePosY
-   ld [hl+], a
-   dec b
-   ld [hl], b
    ret
 
 
 
 SECTION "SpriteRam",wram0
 SpritePosY: DS 1
-SpriteJumpVelocity: DS 1
+SpriteJumpPhase: DS 1
 
 SECTION "SpriteOam",oam
 SpriteOam: DS 4
