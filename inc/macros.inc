@@ -9,4 +9,9 @@ WaitForVBlank: MACRO
    jr nz, @-4  ; Each instruction is 2 bytes
 ENDM
 
+TestZero: MACRO
+   inc \1
+   dec \1
+ENDM
+
 ENDC

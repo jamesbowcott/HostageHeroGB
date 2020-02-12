@@ -90,6 +90,24 @@ VblankHandler:
    ld hl, rSCX
    inc [hl]
 
+   call ReadJoypad
+   ld hl, SpriteJumpPhase
+   and a, (P1F_0 << 4)   ; Test for A pressed
+   jr z, .a_button_not_pressed
+.a_button_pressed
+   ; If not jumping (phase = 0), start jump
+   ld a, 0
+   cp [hl]
+   jr nz, .end_joypad
+   inc [hl]
+.a_button_not_pressed:
+   ; If at the end of the jump (phase = FF), reset
+   ld a, [hl]
+   inc a
+   jr nz, .end_joypad
+   ld [hl], a
+.end_joypad:
+
    call UpdatePlayerSprite
    call DrawPlayerSprite
    reti
@@ -112,3 +130,41 @@ LcdcHandler:
    ld [hl], $ff
    ld [hl], a
    reti
+
+
+; ------------------------------------------------------------------------------
+; `func ReadJoypad()`
+; 
+; Reads the currently pressed joypad buttons
+; 
+; - Outputs:
+;  - `a`: Hi nibble = P14 mask, Lo nibble = P15 mask 
+;
+; - Destroys: `e`
+;
+; ------------------------------------------------------------------------------
+ReadJoypad:
+   ld a, P1F_4    ; Select the D-Pad output port
+   ld [rP1], a    ; Write to the P1 port
+   ld a, [rP1]    ; Nintendo docs say to read twice
+   ld a, [rP1]    ; .
+   and a, $F      ; Mask off the high nibble
+   swap a         ; Swap nibbles
+   ld e, a        ; Store to e
+
+   ld a, P1F_5    ; Select the Buttons output port
+   ld [rP1], a
+   ld a, [rP1]
+   ld a, [rP1]
+   and a, $f      ; Mask off the high nibble
+   or e           ; OR with e
+   cpl            ; Flip bits
+   ld e, a        ; Store to e
+
+   ; Port reset
+   ld a, 0
+   ld [rP1], a
+
+   ld a, e
+
+   ret

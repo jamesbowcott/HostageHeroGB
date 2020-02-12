@@ -36,9 +36,30 @@ Div88::
    endr
    ret
 
+; ------------------------------------------------------------------------------
+; 256 bytes of the upper half of the rising edge of a sine wave
+; 0 = 0.0, FF = 1.0
+; ------------------------------------------------------------------------------
 SineTable::
-ANGLE SET 256.0 * 128.0
-   REPT 256
+; Use rgbasm's built in sin function, it's a bit weird though:
+; int32_t math_Sin(int32_t i)
+; {
+;    return double2fx(sin(fx2double(i) * 2 * M_PI / 65536));
+; }
+
+ANGLE SET 0.0
+   REPT 255
+   ; PRINTT "ANGLE = "
+   ; PRINTF ANGLE
+   ; PRINTT ", SIN(ANGLE) = "
+   ; PRINTF SIN(ANGLE)
+   ; PRINTT ", MUL(SIN(ANGLE), 255.0) = "
+   ; PRINTF MUL(SIN(ANGLE), 256.0)
+   ; PRINTT ", MUL(SIN(ANGLE), 255.0) >> 16 = "
+   ; PRINTV MUL(SIN(ANGLE), 255.0) >> 16
+   ; PRINTT "\n"
    DB MUL(SIN(ANGLE), 255.0) >> 16
-ANGLE SET ANGLE+128.0
+ANGLE SET ANGLE + DIV(258.0, 4.0)
    ENDR
+   DB $FF ; Because of the lack of precision we cant get to 1.0,
+          ; so hard code last byte to $FF
